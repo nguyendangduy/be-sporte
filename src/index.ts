@@ -1,6 +1,7 @@
 import express from 'express';
 import { connectToDatabase } from './database';
 import userRoutes from './routes/userRoutes';
+import keyRoutes from './routes/keyRoutes';
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,7 @@ connectToDatabase().then((db) => {
   });
 
   app.use(`${prelix}/users`, userRoutes);
+  app.use(`${prelix}/keys`, keyRoutes);
 
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
