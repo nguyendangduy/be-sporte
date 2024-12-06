@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getKeysCollection } from "../database";
-import { generateRandomString } from '../utils/randomString';
+import csv from 'csv-parser';
+import { Readable } from 'stream';
 
 export async function getKeyActive() {
   try {
@@ -18,18 +19,32 @@ export async function getKeyActive() {
   }
 }
 
-export async function createKey(req: Request, res: Response) { 
+export const importKeys = async (req: Request, res: Response): Promise<void> => {
   try {
     const keysCollection = getKeysCollection();
-    const key = {
-      code: generateRandomString(10),
-      event: 'RUNNING',
-    };
-    const result = await keysCollection.insertOne(key);
-    const insertedKey = await keysCollection.findOne({ _id: result.insertedId });
-    res.json(insertedKey);
+    const file = req.file;
+    const keys: any[] = [];
+    const now = new Date();
+
+    if (!file) {
+      res.status(400).json({ message: 'No file uploaded' });
+      return;
+    }
+
+    const stream = Readable.from(file.buffer.toString());
+    stream
+      .pipe(csv())
+      .on('data', (data) => {
+        data.created_at = now;
+        data.updated_at = now;
+        keys.push(data);
+      })
+      .on('end', async () => {
+        await keysCollection.insertMany(keys);
+        res.status(201).json({ message: 'Keys imported successfully' });
+      });
   } catch (error) {
-    console.error('Error fetching key:', error);
+    console.error('Error importing keys:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};

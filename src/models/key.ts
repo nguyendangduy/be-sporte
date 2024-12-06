@@ -3,4 +3,6 @@ export interface Key {
   code: string;
   event: string;
   userId?: string | null;
+  created_at?: Date;
+  updated_at?: Date;
 }

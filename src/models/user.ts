@@ -4,4 +4,6 @@ export interface User {
   name: string;
   phone: string;
   code_uprace?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
