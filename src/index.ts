@@ -1,7 +1,7 @@
 import express from "express";
 import { connectToDatabase } from "./database";
 import userRoutes from "./routes/userRoutes";
-import keyRoutes from "./routes/keyRoutes";
+import stravaRoutes from "./routes/stravaRoutes";
 
 const app = express();
 const port = 3000;
@@ -16,7 +16,7 @@ connectToDatabase()
     });
 
     app.use(`${prelix}/users`, userRoutes);
-    app.use(`${prelix}/keys`, keyRoutes);
+    app.use(`${prelix}/strava`, stravaRoutes);
 
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}`);

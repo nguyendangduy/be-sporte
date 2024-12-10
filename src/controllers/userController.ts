@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
-import { getUsersCollection, getKeysCollection } from "../database";
+import { getUsersCollection } from "../database";
 import { User } from "../models/user";
 
 export async function getUsers(req: Request, res: Response) {
@@ -19,7 +19,7 @@ export async function getUser(req: Request, res: Response) {
     const usersCollection = getUsersCollection();
     const { id } = req.params;
     const user = await usersCollection.findOne({
-      _id: new ObjectId(id).toString(),
+      _id: new ObjectId(id),
     });
     if (user) {
       res.json(user);
@@ -46,13 +46,6 @@ export async function createUser(req: Request, res: Response) {
       _id: result.insertedId,
     });
 
-    if (user.code_uprace) {
-      const keysCollection = getKeysCollection();
-      keysCollection.updateOne(
-        { userId: null },
-        { $set: { userId: insertedUser?._id } }
-      );
-    }
     res.json(insertedUser);
   } catch (error) {
     console.error("Error fetching user:", error);
@@ -69,13 +62,13 @@ export async function updateUser(req: Request, res: Response) {
     user.updated_at = new Date();
 
     const result = await usersCollection.updateOne(
-      { _id: new ObjectId(id).toString() },
+      { _id: new ObjectId(id) },
       { $set: user }
     );
 
     if (result.matchedCount > 0) {
       const updatedUser = await usersCollection.findOne({
-        _id: new ObjectId(id).toString(),
+        _id: new ObjectId(id),
       });
       res.json(updatedUser);
     } else {
@@ -92,7 +85,7 @@ export async function deleteUser(req: Request, res: Response) {
     const usersCollection = getUsersCollection();
     const { id } = req.params;
     const result = await usersCollection.deleteOne({
-      _id: new ObjectId(id).toString(),
+      _id: new ObjectId(id),
     });
     if (result.deletedCount > 0) {
       res.send("User deleted");
