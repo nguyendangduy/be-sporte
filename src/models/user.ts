@@ -5,6 +5,7 @@ export interface User {
   email: string;
   name: string;
   phone: string;
+  is_active: boolean;
   strava_token?: string;
   strava_refresh_token?: string;
   created_at?: Date;

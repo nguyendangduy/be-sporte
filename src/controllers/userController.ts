@@ -38,6 +38,7 @@ export async function createUser(req: Request, res: Response) {
     const now = new Date();
     const user: User = {
       ...req.body,
+      is_active: false,
       created_at: now,
       updated_at: now,
     };
